@@ -1,0 +1,11 @@
+@@ -1,8 +0,0 @@
+.idea
+*.pyc
+code/config
+test
+.vscode
+venv
+.env
+lib/*
+deployments/*
+conf/*

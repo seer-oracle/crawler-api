@@ -1,0 +1,35 @@
+
+
+# File: docker-compose.yml
+# Created at 04/04/2022
+
+version: "3"
+
+services:
+  rz-api:
+    image: crawler-service
+    build: .
+    restart: always
+    volumes:
+      - ./:/webapps
+    ports:
+      -  5004:6004
+    command: supervisord -n -c /etc/supervisor.d/service.conf
+
+  # workers:
+  #   # Name the service container
+  #   image: worker-name-service
+  #   container_name: worker-name-service
+  #   build: ./
+  #   restart: on-failure
+  #   volumes:
+  #     - ./:/webapps/service
+  #     - /var/log/apps/:/var/log/apps/
+  #   networks:
+  #     - same-network
+
+  #   command: supervisord -n -c /etc/supervisor.d/worker-supervisord.conf
+
+networks:
+  same-network:
+    external: true
