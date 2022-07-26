@@ -17,18 +17,50 @@ list_address_vexchange = [
 ]
 
 list_address_poloniex = [
-    { 
+    {
      "key": "USDT_BTC",
      "symbol": "BTCUSDT"
      },
-    { 
+    {
      "key": "USDT_ETH",
      "symbol": "ETHUSDT"
      },
-    { 
+    {
      "key": "USDT_BUSD",
      "symbol": "BUSDUSDT"
      }
+]
+
+
+list_address_oceanex = [
+    {
+     "key": "VETUSDT",
+     "symbol": "VETUSDT"
+     },
+    {
+     "key": "VETVEUSD",
+     "symbol": "VETVEUSD"
+     },
+    {
+     "key": "VEUSDUSDT",
+     "symbol": "VEUSDUSDT"
+     },
+    {
+     "key": "VTHOUSDT",
+     "symbol": "VTHOUSDT"
+     },
+    {
+     "key": "BTCUSDT",
+     "symbol": "BTCUSDT"
+     },
+    {
+     "key": "ETHUSDT",
+     "symbol": "ETHUSDT"
+     },
+    {
+     "key": "BUSDUSDT",
+     "symbol": "BUSDUSDT"
+     },
 ]
 
 def convert_to_vexchange_array(exchange_data):
@@ -46,3 +78,12 @@ def convert_to_poloniex_array(exchange_data):
         _ex_data['symbol'] = address.get("symbol")
         poloniex.append(_ex_data)
     return poloniex   
+
+
+def convert_to_oceanex_array(exchange_data):
+    oceanex = []
+    for address in list_address_oceanex:
+        _ex_data = exchange_data.get(address.get("key").lower());
+        _ex_data['symbol'] = address.get("symbol")
+        oceanex.append(_ex_data)
+    return oceanex

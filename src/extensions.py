@@ -16,10 +16,19 @@ from src.utils import dex
     
 assets = [
           'VETUSDT','VEUSDUSDT','VTHOUSDT','BTCUSDT','ETHUSDT','USDT','BUSDUSDT', 'VEXUSDT', 'WVETUSDT',
-          'VETBUSD','VEBUSD','VTHOBUSD','BTCBUSD','ETHBUSD','BUSD'
+          'VETBUSD','VEUSD','VTHOBUSD','BTCBUSD','ETHBUSD','BUSD'
           'VETUSD','VEUSDUSD','VTHOUSD','BTCUSD','ETHUSD','USD','BUSDUSD', 'VEXUSD', 'WVETUSD',
           'BTC', 'ETH', 'VEUSD', 'VET', 'VTHO','VEX','WVET'
           ]
+
+ws_dex_list = [
+    {   
+        "name": "BitMart",
+        "url": "wss://ws-manager-compress.bitmart.com/api?protocol=1.1",
+        "message":'{"op": "subscribe", "args": ["spot/ticker:BTC_USDT", "spot/ticker:ETH_USDT",  "spot/ticker:VET_USDT", "spot/ticker:VTHO_USDT", "spot/ticker:BUSD_USDT"]}'
+        
+    },
+]
 
 dex_list = [
             {   
@@ -62,7 +71,23 @@ dex_list = [
                 "name": "Poloniex",
                 "url": "https://poloniex.com/public?command=returnTicker",
                 "delay": 5 #seconds
-            }
+            },
+            {   
+                "name": "KuCoin",
+                "url": "https://www.kucoin.com/_api/quicksilver/universe-currency/market/currency-list?lang=en_US",
+                "delay": 5 #seconds
+            },
+            {   
+                "name": "OceanEx",
+                "url": "https://engine.oceanex.pro/api/v2/tickers",
+                "delay": 5 #seconds
+            },
+            {   
+                "name": "Houbi",
+                "url": "https://billboard.service.cryptowat.ch/markets?page=1&limit=3000&volumeInAssets=usd&sort=price&sortAsset=usd&onlyExchanges=huobi",
+                "delay": 5 #seconds
+            },
+           
         ]
 
 class Extensions(object):
@@ -74,26 +99,27 @@ class Extensions(object):
     def filter_price_by_dex(dex_name, price_respone):
         _prices = []
     
-        if dex_name == 'Kraken_CW' or dex_name == 'Binance_CW':
+        if dex_name == 'Kraken_CW' or dex_name == 'Binance_CW' or dex_name == 'Houbi':
             _prices = price_respone.get("result").get("rows")
         
         if dex_name == 'Kraken':
             _prices = price_respone.get("result")
             
-        if dex_name == 'Binance':
+        if dex_name == 'Binance' or dex_name == 'CoinBase' \
+            or dex_name == 'KuCoin':
             _prices = price_respone.get("data")    
             
         if dex_name == 'Gemini':
             _prices = price_respone.get("prices")   
-        
-        if dex_name == 'CoinBase':
-            _prices = price_respone.get("data")      
         
         if dex_name == 'Vexchange':
             _prices = dex.convert_to_vexchange_array(price_respone)  
             
         if dex_name == 'Poloniex':
             _prices = dex.convert_to_poloniex_array(price_respone)         
+        
+        if dex_name == 'OceanEx':
+            _prices = dex.convert_to_oceanex_array(price_respone)             
 
         return _prices 
 
@@ -101,7 +127,7 @@ class Extensions(object):
     def filter_data_by_dex(dex_name, price):
         _symbol = ""
         _price = 0
-        if dex_name == 'Kraken_CW' or dex_name == 'Binance_CW':
+        if dex_name == 'Kraken_CW' or dex_name == 'Binance_CW' or dex_name == 'Houbi':
             _symbol = price.get("instrument")
             _price = price.get("summary").get("price").get("last")
             
@@ -129,6 +155,13 @@ class Extensions(object):
             _symbol =  f'{price.get("symbol")}'
             _price = price.get("last")
             
+        if dex_name == 'KuCoin':
+            _symbol = price.get("symbol").replace("-", "")
+            _price = price.get("lastPrice")   
+            
+        if dex_name == 'OceanEx':
+            _symbol = price.get("symbol")
+            _price = price.get("last")       
             
         if not _symbol:
             return None
